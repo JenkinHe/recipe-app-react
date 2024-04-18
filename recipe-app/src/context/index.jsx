@@ -8,6 +8,8 @@ export const GlobalContext = createContext(null);
 export default function GlobalState({children}){
 
     const [searchParam, setSearchParam] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [ recipeList,setRecipeList]= useState([]);
 
     async function handleSubmit(event){
         event.preventDefault();
@@ -15,14 +17,23 @@ export default function GlobalState({children}){
             const response =await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes?search=${searchParam}`);
 
             const data =await response.json()
-            console.log(data);
+            if(data?.data?.recipes){
+                setRecipeList(data?.data?.recipes);
+                setLoading(false)
+                setSearchParam('');
+
+            }
 
         }catch(e){
+            setLoading(false)
+            setSearchParam('');
             console.log(e);
         }
 
     }
 
-    return <GlobalContext.Provider value={{searchParam,setSearchParam,handleSubmit}}>{children}</GlobalContext.Provider>
+    console.log(recipeList)
+
+    return <GlobalContext.Provider value={{searchParam,loading,recipeList,setSearchParam,handleSubmit}}>{children}</GlobalContext.Provider>
 
 }
